@@ -28,6 +28,15 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+FT_CFLAGS=@CFLAGS@ @COMP_VENDOR_CFLAGS@ @DEFS@
+
+FT_DIR=./
+VERBOSE=1
+FTLA=$(FT_DIR)/libfreetdm.la
+LOCAL_OBJS=mod_freetdm/tdm.o
+LOCAL_CFLAGS=-I$(FT_DIR)/src/include -I$(FT_DIR)/src/isdn/include $(FT_CFLAGS)
+LOCAL_LDFLAGS=-L$(FT_DIR) -lfreetdm 
+-include $(BASE)/build/modmake.rules
 
 ACLOCAL_AMFLAGS  = -I build
 AUTOMAKE_OPTIONS = foreign
@@ -275,8 +284,8 @@ mod_freetdm/mod_freetdm.so: libfreetdm.la mod_freetdm/mod_freetdm.c
 
 mod_freetdm: mod_freetdm/mod_freetdm.so
 
-mod_freetdm-install: mod_freetdm
-	$(MAKE) -C mod_freetdm install
+mod_freetdm-install: mod_freetdm local_install
+#	$(MAKE) -C mod_freetdm install
 
 mod_freetdm-clean:
 	@if [ -f mod_freetdm/mod_freetdm.so ] ; then \
@@ -288,3 +297,19 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)@confdir@
 	@[ -f "$(DESTDIR)@confdir@/freetdm.conf" ] || ( cp conf/*.conf $(DESTDIR)@confdir@)
 	@echo FreeTDM Installed
+
+
+local_depend: $(FTLA)
+
+$(FTLA): $(FT_DIR)/.update
+	cd $(FT_DIR)
+#	cd $(FT_DIR) && $(MAKE)
+
+local_install:
+#	cd $(FT_DIR) && $(MAKE) install
+	[ -f $(DESTDIR)@confdir@/autoload_configs/freetdm.conf.xml ] || cp -f $(FT_DIR)/conf/freetdm.conf.xml  $(DESTDIR)@confdir@/autoload_configs
+
+#local_clean:
+#	cd $(FT_DIR) && $(MAKE) clean
+
+
