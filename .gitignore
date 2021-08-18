@@ -1,3 +1,11 @@
+.deps/
+.libs/
+autom4te.cache/
+build/compile
+build/depcomp
+build/install-sh
+build/ltmain.sh
+build/missing
 *.o
 *.lo
 *.so
@@ -5,8 +13,14 @@
 *.orig
 *.rej
 *.log
+*.la
+detect_dtmf
+detect_tones
+freetdm.pc
+.dirstamp
 
 Makefile
+Makefile.in
 config.*
 configure
 libtool

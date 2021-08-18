@@ -67,7 +67,8 @@ typedef uint64_t ftdm_time_t;
 #define ftdm_copy_string(x,y,z) strncpy(x, y, z - 1)
 
 /*! \brief strncpy into a fixed-length buffer */
-#define ftdm_set_string(x,y) strncpy(x, y, sizeof(x)-1)
+/* #define ftdm_set_string(x,y) strncpy(x, y, sizeof(x)-1) */
+#define ftdm_set_string(x,y) {memcpy(x, y, (sizeof(x)>sizeof(y)?sizeof(y):sizeof(x))-1); x[(sizeof(x)>sizeof(y)?sizeof(y):sizeof(x))-1] = 0;}
 
 /*! \brief check for null or zero length string buffer */
 #define ftdm_strlen_zero(s) (!s || *s == '\0')
