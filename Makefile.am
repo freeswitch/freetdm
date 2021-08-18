@@ -30,7 +30,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ACLOCAL_AMFLAGS  = -I build
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign subdir-objects
 
 SRC = src
 
@@ -267,24 +267,23 @@ ftmod_misdn_la_LDFLAGS  = -shared -module -avoid-version
 ftmod_misdn_la_LIBADD   = libfreetdm.la
 endif
 
+noinst_LTLIBRARIES = libmodfreetdm.la
+
+libmodfreetdm_la_SOURCES  = mod_freetdm/mod_freetdm.c mod_freetdm/tdm.c
+libmodfreetdm_la_CFLAGS   = $(FREESWITCH_CFLAGS) -I.
+libmodfreetdm_la_LIBADD = libfreetdm.la
+
+fsmod_LTLIBRARIES = mod_freetdm.la
+mod_freetdm_la_CFLAGS   = $(FREESWITCH_CFLAGS) -I.
+mod_freetdm_la_LDFLAGS  = -avoid-version -module -no-undefined -shared $(FREESWITCH_LIBS)
+mod_freetdm_la_LIBADD = libfreetdm.la libmodfreetdm.la
+
 dox doxygen:
 	doxygen $(FT_SRCDIR)/docs/Doxygen.conf
-
-mod_freetdm/mod_freetdm.so: libfreetdm.la mod_freetdm/mod_freetdm.c
-	$(MAKE) -C mod_freetdm
-
-mod_freetdm: mod_freetdm/mod_freetdm.so
-
-mod_freetdm-install: mod_freetdm
-	$(MAKE) -C mod_freetdm install
-
-mod_freetdm-clean:
-	@if [ -f mod_freetdm/mod_freetdm.so ] ; then \
-		$(MAKE) -C mod_freetdm clean ; \
-	fi
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(prefix)
 	$(mkinstalldirs) $(DESTDIR)@confdir@
 	@[ -f "$(DESTDIR)@confdir@/freetdm.conf" ] || ( cp conf/*.conf $(DESTDIR)@confdir@)
+	@[ -f "$(DESTDIR)@fsconfdir@/autoload_configs/freetdm.conf.xml" ] || ( cp -f conf/freetdm.conf.xml $(DESTDIR)@fsconfdir@/autoload_configs)
 	@echo FreeTDM Installed
